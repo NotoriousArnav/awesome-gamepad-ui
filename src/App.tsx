@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 The Awesome Gamepad UI Authors
+
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { Gamepad2 } from "lucide-react";

@@ -1,0 +1,7 @@
+# TODO: replace the placeholder URL with the real repository URL once the
+# project is published on GitHub.
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & ideas
+    url: https://github.com/your-org/awesome-gamepad-ui/discussions
+    about: Ask questions, share themes and mods, and discuss ideas.

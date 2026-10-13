@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+// Copyright (C) 2026 The Awesome Gamepad UI Authors
+
 use serde::Serialize;
 
 /// Basic application metadata, exposed to the frontend as an IPC smoke test.

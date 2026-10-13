@@ -70,3 +70,18 @@ npx shadcn@latest add <component>
 - Library providers (Lutris, Steam)
 - Layered per-game **launch options** with a live resolved-command preview
 - Themes and a WASM/JS mod platform
+
+## Community
+
+This project is built in the open and meant to grow with its community — see
+[CONTRIBUTING.md](CONTRIBUTING.md) to get involved, and the
+[Code of Conduct](CODE_OF_CONDUCT.md) for how we treat each other.
+
+## License
+
+Awesome Gamepad UI is licensed under **GPL-3.0-or-later** — see [LICENSE](LICENSE).
+
+The application core is copyleft so the project can't be closed off and
+improvements flow back to everyone. The planned **mod / theme SDK** will be
+released under `MIT OR Apache-2.0` so anyone can build (or sell) mods and themes
+without licensing friction.
