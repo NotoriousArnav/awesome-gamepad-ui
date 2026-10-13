@@ -40,6 +40,42 @@ npm run tauri build
 
 - `src/` — React frontend (components, input, navigation, screens)
 - `src-tauri/` — Rust backend (providers, launch pipeline, IPC commands)
+- `scripts/` — developer tooling
+
+## Debugging gamepad input
+
+Controller input is platform-specific enough to be worth seeing, so there's a
+small logging layer around it.
+
+Every run writes to `/tmp/awesome-gamepad-ui/log-<local-timestamp>.log` and
+prints the same lines to the terminal. The path is echoed at startup:
+
+```text
+[gamepad] debug log: /tmp/awesome-gamepad-ui/log-2026-10-14_03-05-40.log
+```
+
+Each line names the controller that produced it: player number, family, and
+device name. The family is read from the name, falling back to the USB vendor
+id that gilrs encodes in the UUID (Linux), so a generically named pad can still
+be identified:
+
+```text
+[info]  03:05:40  P1 Xbox "AWP Virtual Pad"  connected  uuid=03000000-…  vendor=045e product=02fd  mapping=none
+[debug] 03:05:41  P1 Xbox "AWP Virtual Pad"  press   South
+[debug] 03:05:41  P1 Xbox "AWP Virtual Pad"  axis    RightStickX  -0.67
+```
+
+The logger runs in dev builds and whenever `VITE_DEBUG_GAMEPAD=1` is set. For
+the gamepad plugin's raw, unfiltered JSON as well, set `AWP_DEBUG_GAMEPAD_RAW=1`
+— very verbose, one line per axis delta.
+
+No controller to hand? `scripts/virtual-gamepad.py` creates a temporary one:
+
+```sh
+python3 scripts/virtual-gamepad.py 30
+```
+
+It needs write access to `/dev/uinput` (an ACL or the `input` group).
 
 ## Pull requests
 
