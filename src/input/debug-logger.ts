@@ -4,6 +4,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { type GamepadEvent, parseVariant } from "./gamepad-event";
+import { logLine } from "./log";
 import {
   GAMEPAD_TYPE_LABELS,
   type GamepadType,
@@ -16,8 +17,6 @@ const AXIS_DEADZONE = 0.15;
 const AXIS_PRECISION = 2;
 /** Decimals an analog button (trigger) is rounded to before duplicate suppression. */
 const BUTTON_PRECISION = 1;
-
-type Level = "info" | "debug";
 
 /** Identity and per-pad throttle state for one controller. */
 interface Pad {
@@ -39,12 +38,6 @@ interface GamepadSummary {
   vendor_id: number | null;
   product_id: number | null;
   mapping: string;
-}
-
-function send(level: Level, message: string): void {
-  const time = new Date().toTimeString().slice(0, 8);
-  // Logging must never break input handling.
-  void invoke("log_gamepad", { level, message: `${time}  ${message}` }).catch(() => {});
 }
 
 function round(value: number, precision: number): number {
@@ -92,7 +85,7 @@ async function logAttachedPads(pads: Map<number, Pad>): Promise<void> {
     if (pads.has(summary.id)) continue;
     const pad = makePad(summary.id, summary.name, summary.uuid);
     pads.set(summary.id, pad);
-    send(
+    logLine(
       "info",
       `${tag(pad)}  connected  uuid=${summary.uuid}` +
         `  vendor=${hex(summary.vendor_id)} product=${hex(summary.product_id)}` +
@@ -122,7 +115,7 @@ export async function installGamepadDebugLogger(): Promise<UnlistenFn> {
     if (variant.name === "Disconnected") {
       const pad = pads.get(payload.id);
       pads.delete(payload.id);
-      if (pad !== undefined) send("info", `${tag(pad)}  disconnected`);
+      if (pad !== undefined) logLine("info", `${tag(pad)}  disconnected`);
       return;
     }
 
@@ -132,7 +125,7 @@ export async function installGamepadDebugLogger(): Promise<UnlistenFn> {
     if (pad === undefined) {
       pad = makePad(payload.id, payload.name, payload.uuid);
       pads.set(payload.id, pad);
-      send(
+      logLine(
         "info",
         `${tag(pad)}  connected  uuid=${payload.uuid}  mapping=${payload.mapping || "none"}`,
       );
@@ -146,11 +139,11 @@ export async function installGamepadDebugLogger(): Promise<UnlistenFn> {
         break;
 
       case "ButtonPressed":
-        send("debug", `${prefix}  press   ${String(variant.args[0])}`);
+        logLine("debug", `${prefix}  press   ${String(variant.args[0])}`);
         break;
 
       case "ButtonReleased":
-        send("debug", `${prefix}  release ${String(variant.args[0])}`);
+        logLine("debug", `${prefix}  release ${String(variant.args[0])}`);
         break;
 
       case "AxisChanged": {
@@ -162,7 +155,7 @@ export async function installGamepadDebugLogger(): Promise<UnlistenFn> {
         if (snapped === 0 && !pad.axes.has(axis)) return;
         if (pad.axes.get(axis) === snapped) return;
         pad.axes.set(axis, snapped);
-        send(
+        logLine(
           "debug",
           `${prefix}  axis    ${axis.padEnd(12)} ${snapped.toFixed(AXIS_PRECISION)}`,
         );
@@ -179,7 +172,7 @@ export async function installGamepadDebugLogger(): Promise<UnlistenFn> {
         if (snapped <= 0 || snapped >= 1) return;
         if (pad.buttons.get(button) === snapped) return;
         pad.buttons.set(button, snapped);
-        send(
+        logLine(
           "debug",
           `${prefix}  analog  ${button.padEnd(12)} ${snapped.toFixed(BUTTON_PRECISION)}`,
         );

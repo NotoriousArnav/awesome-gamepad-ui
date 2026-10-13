@@ -65,9 +65,27 @@ be identified:
 [debug] 03:05:41  P1 Xbox "AWP Virtual Pad"  axis    RightStickX  -0.67
 ```
 
+Raw input is also translated into semantic actions (`confirm`, `up`, …) with
+auto-repeat on held directions, and focus moves are narrated, so the log reads
+as mechanical input → intent → result:
+
+```text
+[debug] 05:28:16  P1  action  right (press)
+[debug] 05:28:16  focus → game-2
+[debug] 05:28:16  P1  action  right (repeat)
+[debug] 05:28:16  focus → game-3
+```
+
 The logger runs in dev builds and whenever `VITE_DEBUG_GAMEPAD=1` is set. For
 the gamepad plugin's raw, unfiltered JSON as well, set `AWP_DEBUG_GAMEPAD_RAW=1`
 — very verbose, one line per axis delta.
+
+The input engine and spatial navigation are unit-tested (`tests/`, run with
+`npm run test` via Node's built-in runner, no extra dependencies):
+
+```sh
+npm run test
+```
 
 No controller to hand? `scripts/virtual-gamepad.py` creates a temporary one:
 
@@ -81,7 +99,7 @@ It needs write access to `/dev/uinput` (an ACL or the `input` group).
 
 1. Fork the repo and create a branch from `main`.
 2. Keep changes focused; one concern per PR where possible.
-3. Make sure `npm run build` and `cargo check` pass.
+3. Make sure `npm run test`, `npm run build` and `cargo check` pass.
 4. Write a clear description of **what** changed and **why**.
 5. **Sign off your commits** (see below).
 
