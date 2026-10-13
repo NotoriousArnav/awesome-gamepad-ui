@@ -22,6 +22,7 @@ fn app_info() -> AppInfo {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_gamepad::init())
         .invoke_handler(tauri::generate_handler![app_info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
